@@ -67,7 +67,11 @@ synthetic-fixture, provider-free acceptance proof, not live-model accuracy proof
 ### Production validation status
 
 No hosted-development, staging, production, multi-user, or live-provider environment was used.
-Public GitHub Actions proof is pending the validated commit and push.
+Public GitHub Actions run
+[`29684602378`](https://github.com/ownasquare/multimodal-document-intelligence/actions/runs/29684602378)
+succeeded on commit `067386f4219018737a88b2fbac6e0345930b7a53`: `quality` completed in
+1m33s and `rendered-e2e` completed in 4m6s, including isolated-topology cleanup. This is public,
+provider-free CI proof; it is not hosted-product or live-model proof.
 
 ### Localhost validation integrity
 
@@ -99,12 +103,15 @@ Warning Suppression Status: `not_suppressed`.
 
 - Repository: `ownasquare/multimodal-document-intelligence`.
 - Implementation commit: `1fa3bbe94e4acf6cfdaef374a69b0e1c3a6cd293`.
+- Publicly validated head: `067386f4219018737a88b2fbac6e0345930b7a53`.
 - Committed files: the eight paths listed under Changed surfaces.
 - Validation commands: `make check`; focused repository contract; isolated Compose config/up/down;
   rendered pytest with Chromium and failure-only artifacts; public-tree checker; workflow YAML
   parse; `git diff --check`; in-app Browser desktop/phone proof.
-- Push evidence: pending push.
-- Public Actions run: pending push.
+- Push evidence: `main` range `6893adc..067386f` pushed to
+  `https://github.com/ownasquare/multimodal-document-intelligence.git`.
+- Public Actions run: [`29684602378`](https://github.com/ownasquare/multimodal-document-intelligence/actions/runs/29684602378),
+  conclusion `success`; both `quality` and `rendered-e2e` concluded `success`.
 
 ## Remaining boundaries
 
