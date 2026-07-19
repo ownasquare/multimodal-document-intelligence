@@ -1,0 +1,102 @@
+[
+  {
+    "id": "northstar-text-summary",
+    "question": "What was Q2 net revenue, and how did it compare with plan?",
+    "answerable": true,
+    "expected_answer": "Q2 net revenue was $8.4 million, 6% above plan.",
+    "expected_facts": ["$8.4M", "6% above plan"],
+    "required_modalities": ["text"],
+    "evidence_pages": [1],
+    "reasoning": "direct text lookup"
+  },
+  {
+    "id": "northstar-table-arithmetic",
+    "question": "What was the combined Q2 net revenue for West and Northeast?",
+    "answerable": true,
+    "expected_answer": "West and Northeast generated $4.7 million in combined net revenue.",
+    "expected_facts": ["$4.7M", "West", "Northeast"],
+    "required_modalities": ["table", "table_row"],
+    "evidence_pages": [2],
+    "reasoning": "add 2.3 and 2.4 from two table rows"
+  },
+  {
+    "id": "northstar-monthly-chart",
+    "question": "By how much did monthly net revenue increase from April to June?",
+    "answerable": true,
+    "expected_answer": "Monthly net revenue increased by $0.7 million, from $2.5 million in April to $3.2 million in June.",
+    "expected_facts": ["$0.7M", "$2.5M", "$3.2M"],
+    "required_modalities": ["chart"],
+    "evidence_pages": [3],
+    "reasoning": "read two raster chart labels and subtract"
+  },
+  {
+    "id": "northstar-product-chart",
+    "question": "Which product contributed the largest share of Q2 gross bookings?",
+    "answerable": true,
+    "expected_answer": "Core Platform was the largest product at 45% of Q2 gross bookings.",
+    "expected_facts": ["Core Platform", "45%"],
+    "required_modalities": ["chart"],
+    "evidence_pages": [4],
+    "reasoning": "compare labels in the raster product-mix chart"
+  },
+  {
+    "id": "northstar-scanned-memo",
+    "question": "What caused the June 14 packing interruption, how long did it last, and how many orders were delayed?",
+    "answerable": true,
+    "expected_answer": "An expired barcode-service certificate caused a 47-minute outage that delayed 320 orders.",
+    "expected_facts": ["expired barcode-service certificate", "47 minutes", "320 orders"],
+    "required_modalities": ["ocr", "image"],
+    "evidence_pages": [5],
+    "reasoning": "read the scanned raster memo"
+  },
+  {
+    "id": "northstar-flow-diagram",
+    "question": "What happens when partner capacity is not available in the pressure-test flow?",
+    "answerable": true,
+    "expected_answer": "Affected orders move to a manual hold and then require incident-lead approval.",
+    "expected_facts": ["Manual hold", "Incident lead approval"],
+    "required_modalities": ["diagram"],
+    "evidence_pages": [6],
+    "reasoning": "follow the No branch through two diagram nodes"
+  },
+  {
+    "id": "northstar-risk-table",
+    "question": "Which open risk is High for both likelihood and impact, and what is its mitigation?",
+    "answerable": true,
+    "expected_answer": "R-03 Carrier capacity is High/High; Logistics must reserve 12% partner capacity by August 15.",
+    "expected_facts": ["R-03", "Carrier capacity", "12%", "Aug 15"],
+    "required_modalities": ["table", "table_row"],
+    "evidence_pages": [7],
+    "reasoning": "filter risk rows by two rating columns"
+  },
+  {
+    "id": "northstar-cross-modal-total",
+    "question": "Do the three monthly chart values reconcile to the Q2 net revenue total?",
+    "answerable": true,
+    "expected_answer": "Yes. April $2.5M plus May $2.7M plus June $3.2M equals the reported Q2 net revenue of $8.4M.",
+    "expected_facts": ["$2.5M", "$2.7M", "$3.2M", "$8.4M"],
+    "required_modalities": ["chart", "text"],
+    "evidence_pages": [1, 3],
+    "reasoning": "combine chart labels with the executive-summary total"
+  },
+  {
+    "id": "northstar-basis-caution",
+    "question": "Does the difference between $10.5M gross bookings and $8.4M net revenue prove $2.1M of lost revenue?",
+    "answerable": true,
+    "expected_answer": "No. Gross bookings and net revenue use different accounting bases, so the difference cannot be labeled lost revenue without a reconciliation.",
+    "expected_facts": ["different accounting bases", "cannot be labeled lost revenue", "reconciliation"],
+    "required_modalities": ["chart", "text"],
+    "evidence_pages": [4, 8],
+    "reasoning": "recognize incompatible measures across a visual footnote and appendix"
+  },
+  {
+    "id": "northstar-unsupported-csat",
+    "question": "Did Northstar's customer satisfaction score exceed 90 in Q2?",
+    "answerable": false,
+    "expected_answer": "The document does not report a customer satisfaction score.",
+    "expected_facts": [],
+    "required_modalities": [],
+    "evidence_pages": [],
+    "reasoning": "unsupported-answer abstention"
+  }
+]

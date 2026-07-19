@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/ownasquare/multimodal-document-intelligence/discussions
+    about: Ask usage questions or discuss an idea before opening an issue.
+  - name: Support checklist
+    url: https://github.com/ownasquare/multimodal-document-intelligence/blob/main/SUPPORT.md
+    about: Review diagnostics and privacy-safe reporting guidance.

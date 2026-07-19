@@ -1,0 +1,67 @@
+name: document-intelligence
+
+x-app: &app
+  build:
+    context: .
+  image: document-intelligence:local
+  restart: unless-stopped
+  environment: &app-env
+    DOCINTEL_ENVIRONMENT: production
+    DOCINTEL_DATA_DIR: /data
+    DOCINTEL_API_HOST: 0.0.0.0
+    DOCINTEL_API_PORT: 8014
+    DOCINTEL_UI_PORT: 8514
+    DOCINTEL_API_BASE_URL: http://api:8014
+    DOCINTEL_API_TOKEN: ${DOCINTEL_API_TOKEN:-local-compose-token-change-before-sharing}
+    DOCINTEL_PROVIDER_MODE: ${DOCINTEL_PROVIDER_MODE:-deterministic}
+    DOCINTEL_EMBEDDING_PROVIDER: ${DOCINTEL_EMBEDDING_PROVIDER:-deterministic}
+    DOCINTEL_OPENAI_API_KEY: ${DOCINTEL_OPENAI_API_KEY:-}
+    DOCINTEL_DEMO_MODE: ${DOCINTEL_DEMO_MODE:-true}
+  volumes:
+    - document-data:/data
+  read_only: true
+  tmpfs:
+    - /tmp:size=256m,mode=1777
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  api:
+    <<: *app
+    command: ["document-intelligence", "api"]
+    ports:
+      - "127.0.0.1:8014:8014"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8014/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 10s
+
+  worker:
+    <<: *app
+    command: ["document-intelligence", "worker"]
+    depends_on:
+      api:
+        condition: service_healthy
+
+  ui:
+    <<: *app
+    command: ["document-intelligence", "ui"]
+    ports:
+      - "127.0.0.1:8514:8514"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8514/_stcore/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 10s
+
+volumes:
+  document-data:
+

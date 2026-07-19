@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.17"
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --all-groups --frozen
+      - run: uv lock --check
+      - run: uv run python scripts/check_public_repo.py
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+      - run: uv run bandit -q -r src scripts
+      - run: uv run pytest -q -m "not live and not e2e" --disable-socket --allow-unix-socket --cov=document_intelligence --cov-branch --cov-report=xml
+      - run: uv run pip-audit
+      - run: uv build
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Validate and build the local topology
+        run: |
+          docker compose config --quiet
+          docker compose build

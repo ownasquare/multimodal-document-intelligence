@@ -1,0 +1,139 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "multimodal-document-intelligence"
+version = "0.1.0"
+description = "Local-first workspace for asking grounded questions across text, tables, charts, images, and scans"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Document Intelligence Contributors" }]
+keywords = ["multimodal", "document-intelligence", "rag", "pdf", "streamlit", "llamaindex", "chroma"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: FastAPI",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+  "chromadb==0.6.3",
+  "fastapi==0.139.2",
+  "filelock>=3.19,<4",
+  "httpx==0.28.1",
+  "llama-index-core==0.14.23",
+  "numpy>=2.2,<3",
+  "openai==2.46.0",
+  "pdfplumber==0.11.10",
+  "pillow>=12.1,<13",
+  "prometheus-client>=0.22,<1",
+  "pytesseract==0.3.13",
+  "pydantic==2.13.4",
+  "pydantic-settings==2.14.2",
+  "pypdfium2>=5.9,<6",
+  "python-multipart==0.0.32",
+  "streamlit==1.59.2",
+  "structlog>=25.4,<26",
+  "tenacity>=9.1,<10",
+  "typer>=0.21,<1",
+  "uvicorn[standard]==0.51.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ownasquare/multimodal-document-intelligence"
+Documentation = "https://github.com/ownasquare/multimodal-document-intelligence/tree/main/docs"
+Repository = "https://github.com/ownasquare/multimodal-document-intelligence"
+Issues = "https://github.com/ownasquare/multimodal-document-intelligence/issues"
+Changelog = "https://github.com/ownasquare/multimodal-document-intelligence/blob/main/CHANGELOG.md"
+
+[project.scripts]
+document-intelligence = "document_intelligence.cli:app"
+
+[dependency-groups]
+dev = [
+  "bandit>=1.8,<2",
+  "build>=1.4,<2",
+  "hypothesis>=6.140,<7",
+  "mypy>=1.19,<2",
+  "pip-audit>=2.9,<3",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "pytest-cov>=7,<8",
+  "pytest-playwright>=0.7,<1",
+  "pytest-socket>=0.7,<1",
+  "reportlab>=4.4,<5",
+  "respx>=0.22,<1",
+  "ruff>=0.15,<1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/document_intelligence"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"examples/northstar-q2-operations-review.pdf" = "document_intelligence/resources/northstar-q2-operations-review.pdf"
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+  "integration: exercises persistent SQLite, files, or Chroma",
+  "live: makes explicitly opted-in provider calls",
+  "ui: exercises Streamlit presentation",
+  "e2e: reserved for rendered Playwright workflows",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["document_intelligence"]
+omit = ["src/document_intelligence/ui/app.py"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "S", "RUF"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "S105", "S106", "S108"]
+"scripts/**/*.py" = ["S603", "S607"]
+"src/document_intelligence/ui/presentation.py" = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+packages = ["document_intelligence"]
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = [
+  "chromadb.*",
+  "llama_index.*",
+  "pdfplumber.*",
+  "pypdfium2.*",
+  "pytesseract.*",
+  "reportlab.*",
+  "streamlit.*",
+]
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]

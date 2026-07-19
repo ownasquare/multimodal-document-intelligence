@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a focused improvement to the document-questioning workflow.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: User need
+      description: What document task is difficult today, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Smallest useful workflow
+      description: Describe the input, user action, expected answer or evidence, and success signal.
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Primary extension area
+      options:
+        - Parsing or OCR
+        - Visual understanding
+        - Answer provider
+        - Embeddings or vector store
+        - Retrieval or citations
+        - User interface
+        - Documentation or packaging
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Note any existing workflow or extension point you tried.
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Project boundaries
+      options:
+        - label: This keeps documents, questions, and inspectable evidence central to the product.
+          required: true
+        - label: I can describe a synthetic fixture or test for the change.
+          required: true
