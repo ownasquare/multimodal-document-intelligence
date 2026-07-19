@@ -73,6 +73,11 @@ succeeded on commit `067386f4219018737a88b2fbac6e0345930b7a53`: `quality` comple
 1m33s and `rendered-e2e` completed in 4m6s, including isolated-topology cleanup. This is public,
 provider-free CI proof; it is not hosted-product or live-model proof.
 
+The documentation-closeout head `1c3a5881d236cd480e618e248567e862136080fa` also passed both jobs
+in public run
+[`29684764182`](https://github.com/ownasquare/multimodal-document-intelligence/actions/runs/29684764182):
+`quality` completed in 1m31s and `rendered-e2e` completed in 3m33s.
+
 ### Localhost validation integrity
 
 The rendered flow used the production-shaped Compose services and real local sockets. Its separate
@@ -103,15 +108,31 @@ Warning Suppression Status: `not_suppressed`.
 
 - Repository: `ownasquare/multimodal-document-intelligence`.
 - Implementation commit: `1fa3bbe94e4acf6cfdaef374a69b0e1c3a6cd293`.
-- Publicly validated head: `067386f4219018737a88b2fbac6e0345930b7a53`.
+- First publicly validated head: `067386f4219018737a88b2fbac6e0345930b7a53`.
+- Documentation-closeout head: `1c3a5881d236cd480e618e248567e862136080fa`.
 - Committed files: the eight paths listed under Changed surfaces.
 - Validation commands: `make check`; focused repository contract; isolated Compose config/up/down;
   rendered pytest with Chromium and failure-only artifacts; public-tree checker; workflow YAML
   parse; `git diff --check`; in-app Browser desktop/phone proof.
-- Push evidence: `main` range `6893adc..067386f` pushed to
+- Push evidence: `main` ranges `6893adc..067386f` and `067386f..1c3a588` pushed to
   `https://github.com/ownasquare/multimodal-document-intelligence.git`.
 - Public Actions run: [`29684602378`](https://github.com/ownasquare/multimodal-document-intelligence/actions/runs/29684602378),
   conclusion `success`; both `quality` and `rendered-e2e` concluded `success`.
+- Final closeout run: [`29684764182`](https://github.com/ownasquare/multimodal-document-intelligence/actions/runs/29684764182),
+  conclusion `success`; both jobs concluded `success` and isolated cleanup passed.
+
+## Public launch controls
+
+- GitHub repository ruleset `Protect main` (`19169008`) is active on the default branch with no
+  bypass actors. It blocks deletion and force-pushes, requires linear history and pull requests,
+  resolves review threads, and strictly requires the GitHub Actions checks `quality` and
+  `rendered-e2e`. The approval count is intentionally zero so the sole owner is not deadlocked.
+- Repository release immutability is enabled for future releases. GitHub applies this setting only
+  to releases published after enablement, so existing release `v0.1.0` truthfully remains mutable;
+  it was not deleted or recreated.
+- `ownasquare/multimodal-document-intelligence` is pinned on the owner profile alongside the two
+  previously pinned repositories.
+- Authenticated API and GraphQL readback confirmed all three settings after mutation.
 
 ## Remaining boundaries
 
