@@ -1,0 +1,25 @@
+name: document-intelligence-e2e
+
+x-e2e-environment: &e2e-environment
+  DOCINTEL_API_TOKEN: e2e-local-only-token
+  DOCINTEL_PROVIDER_MODE: deterministic
+  DOCINTEL_EMBEDDING_PROVIDER: deterministic
+  DOCINTEL_OPENAI_API_KEY: ""
+  DOCINTEL_DEMO_MODE: "true"
+
+services:
+  api:
+    image: document-intelligence:e2e
+    environment: *e2e-environment
+    ports: !override
+      - "127.0.0.1:${DOCINTEL_E2E_API_PORT:-18014}:8014"
+
+  worker:
+    image: document-intelligence:e2e
+    environment: *e2e-environment
+
+  ui:
+    image: document-intelligence:e2e
+    environment: *e2e-environment
+    ports: !override
+      - "127.0.0.1:${DOCINTEL_E2E_UI_PORT:-18514}:8514"

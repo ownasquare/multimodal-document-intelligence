@@ -30,13 +30,49 @@ jobs:
       - run: uv run pip-audit
       - run: uv build
 
-  container:
+  rendered-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v8.3.2
+        with:
+          version: "0.8.17"
+          enable-cache: true
       - uses: docker/setup-buildx-action@v4
-      - name: Validate and build the local topology
+      - run: uv python install 3.12
+      - run: uv sync --all-groups --frozen
+      - run: uv run playwright install --with-deps chromium
+      - name: Start the isolated deterministic topology
         run: |
-          docker compose config --quiet
-          docker compose build
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml down --timeout 30 --volumes --remove-orphans
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml config --quiet
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml up --build --detach --wait --wait-timeout 300
+      - name: Run the rendered desktop and phone journey
+        run: >-
+          uv run pytest -q -m e2e tests/e2e/test_document_workspace.py
+          --browser chromium
+          --base-url http://127.0.0.1:18514
+          --tracing retain-on-failure
+          --screenshot only-on-failure
+          --full-page-screenshot
+          --output test-results
+      - name: Capture failure diagnostics
+        if: failure()
+        continue-on-error: true
+        run: |
+          mkdir -p test-results
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml ps --all > test-results/compose-ps.txt
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml logs --no-color > test-results/compose.log
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: rendered-e2e-failure
+          path: test-results/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove the isolated topology
+        if: always()
+        run: |
+          docker compose --project-name document-intelligence-e2e -f compose.yaml -f compose.e2e.yaml down --timeout 30 --volumes --remove-orphans

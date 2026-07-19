@@ -10,7 +10,7 @@ uv run ruff format --check .
 uv run ruff check .
 uv run mypy src
 uv run bandit -q -r src scripts
-uv run pytest -m "not live" --disable-socket --allow-unix-socket \
+uv run pytest -m "not live and not e2e" --disable-socket --allow-unix-socket \
   -W error --cov=document_intelligence --cov-branch --cov-report=term-missing -q
 uv run pip-audit
 uv build
@@ -22,8 +22,62 @@ git diff --check
 Tests use generated synthetic files, temporary SQLite/filesystem/Chroma state, deterministic
 embeddings and answer providers, mocked OpenAI transports, and local API/UI fixtures. The HTTP
 lifecycle in `tests/e2e/test_api_workflow.py` uses an in-process ASGI transport. Streamlit tests use
-`AppTest` with a fake API client. Neither is classified as integrated rendered-browser proof. No
-personal document or paid provider request belongs in the deterministic gate.
+`AppTest` with a fake API client. Neither is classified as integrated rendered-browser proof.
+Rendered E2E is kept outside this socket-disabled source gate because it needs Chromium and the
+local Compose network. No personal document or paid provider request belongs in either gate.
+
+## Rendered Playwright gate
+
+Every push to `main` and every pull request runs `tests/e2e/test_document_workspace.py` against
+the real API, worker, and Streamlit containers. The test uses a dedicated Compose project, image,
+ports, network, and disposable volume:
+
+- project: `document-intelligence-e2e`
+- API: `127.0.0.1:18014`
+- UI: `127.0.0.1:18514`
+- image: `document-intelligence:e2e`
+- volume: `document-intelligence-e2e_document-data`
+
+`compose.e2e.yaml` requires Docker Compose 2.24.4 or newer for `!override`. It explicitly forces
+deterministic answer and embedding providers and clears the OpenAI key, so ambient provider
+configuration cannot turn this gate into a paid request.
+
+To reproduce the CI journey locally:
+
+```bash
+uv sync --all-groups --frozen
+uv run playwright install chromium
+docker compose --project-name document-intelligence-e2e \
+  -f compose.yaml -f compose.e2e.yaml \
+  down --timeout 30 --volumes --remove-orphans
+docker compose --project-name document-intelligence-e2e \
+  -f compose.yaml -f compose.e2e.yaml \
+  up --build --detach --wait --wait-timeout 300
+uv run pytest -q -m e2e tests/e2e/test_document_workspace.py \
+  --browser chromium \
+  --base-url http://127.0.0.1:18514 \
+  --tracing retain-on-failure \
+  --screenshot only-on-failure \
+  --full-page-screenshot \
+  --output test-results
+docker compose --project-name document-intelligence-e2e \
+  -f compose.yaml -f compose.e2e.yaml \
+  down --timeout 30 --volumes --remove-orphans
+```
+
+On Linux, use `uv run playwright install --with-deps chromium` so the required system libraries
+are installed with Chromium. GitHub Actions uses that form.
+
+The journey starts from an empty E2E volume, creates the bundled sample through onboarding,
+confirms the sample endpoint is idempotent, waits for preparation, asks the reconciliation
+question, checks page-3 Chart and page-2 Table row evidence, and inspects Documents and Privacy.
+It repeats the visible answer and navigation contract at 1440×1000 and 390×844, checks phone
+overflow, and fails on current-run console warnings, console errors, or page errors.
+
+pytest-playwright closes every context. Traces and full-page screenshots are retained in
+`test-results/` only on failure; GitHub uploads that folder together with Compose diagnostics
+only for failed runs. A successful journey leaves no browser artifact directory. Always use the
+exact E2E project name for cleanup—never remove the normal `document-intelligence` volume.
 
 ## Evaluation contract
 
@@ -35,7 +89,8 @@ canned response.
 ## Proof layers
 
 - **Source and deterministic tests:** reproducible without credentials.
-- **Rendered browser proof:** local Streamlit/FastAPI/worker behavior using synthetic state.
+- **Rendered browser proof:** automated Compose-backed Chromium behavior using the synthetic
+  sample at desktop and phone sizes.
 - **Local container proof:** image/topology/volume/health behavior on the current host.
 - **OCR proof:** host-process OCR requires host Tesseract; the Compose image includes English
   Tesseract and is validated separately with `document-intelligence doctor` and an OCR-backed

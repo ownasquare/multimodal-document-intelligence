@@ -35,13 +35,13 @@ ui:
 	uv run document-intelligence ui
 
 test:
-	uv run pytest -q -m "not live" --disable-socket --allow-unix-socket
+	uv run pytest -q -m "not live and not e2e" --disable-socket --allow-unix-socket
 
 test-live:
 	DOCINTEL_RUN_LIVE_TESTS=1 uv run pytest -q -m live tests/live
 
 coverage:
-	uv run pytest -q -m "not live" --disable-socket --allow-unix-socket --cov=document_intelligence --cov-branch --cov-report=term-missing
+	uv run pytest -q -m "not live and not e2e" --disable-socket --allow-unix-socket --cov=document_intelligence --cov-branch --cov-report=term-missing
 
 lint:
 	uv run ruff check .

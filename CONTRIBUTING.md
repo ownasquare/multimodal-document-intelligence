@@ -15,6 +15,8 @@ privacy boundaries, and deterministic validation.
 Start with the [Quickstart](docs/quickstart.md) if you have not run the sample yet. The
 [Extension guide](docs/extending.md) maps common changes to their exact protocol, registration
 point, focused tests, and compatibility rules.
+For UI or navigation changes, also run the isolated
+[rendered Playwright gate](docs/validation.md#rendered-playwright-gate).
 
 Pull requests should describe the user-visible behavior, data or provider boundary affected, tests
 run, and any proof not performed. Never use customer or personal PDFs as committed fixtures. Add or
