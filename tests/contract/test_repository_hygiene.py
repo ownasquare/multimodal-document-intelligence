@@ -61,3 +61,13 @@ def test_newcomer_docs_and_github_surfaces_are_discoverable() -> None:
         "No API key is needed",
     ):
         assert expected in readme
+
+
+def test_ci_uses_current_node24_action_majors() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+
+    assert "actions/checkout@v7" in workflow
+    assert "astral-sh/setup-uv@v8" in workflow
+    assert "docker/setup-buildx-action@v4" in workflow
+    for outdated in ("actions/checkout@v4", "astral-sh/setup-uv@v6", "setup-buildx-action@v3"):
+        assert outdated not in workflow

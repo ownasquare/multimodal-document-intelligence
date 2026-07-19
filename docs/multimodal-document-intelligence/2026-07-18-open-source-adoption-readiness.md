@@ -52,6 +52,8 @@ The README, Quickstart, UI, sample, and issue forms use the same language for th
 - Branch coverage: 81.14%, above the enforced 80% gate.
 - Ruff, strict mypy, Bandit, pip-audit, lock check, wheel, and source distribution: passed.
 - Public-tree checker, local link checks, Compose configuration, and diff whitespace: passed.
+- Public GitHub Actions quality and container jobs passed on `main`; action majors were then
+  refreshed to their current Node 24-compatible releases to remove deprecation annotations.
 - Final container image:
   `sha256:38e5d1a9a19189be2e79b972a4fb114e8a851009a4ee052c76288c9c5da16736`.
 - Runtime: API and UI healthy, worker running, doctor ready, Tesseract ready, loopback ports only.
