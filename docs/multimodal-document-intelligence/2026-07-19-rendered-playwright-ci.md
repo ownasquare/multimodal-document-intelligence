@@ -97,9 +97,14 @@ Warning Suppression Status: `not_suppressed`.
 
 ## Commit and push evidence
 
-Implementation commit: pending final local gate.
-Push evidence: pending final local gate.
-Public Actions run: pending push.
+- Repository: `ownasquare/multimodal-document-intelligence`.
+- Implementation commit: `1fa3bbe94e4acf6cfdaef374a69b0e1c3a6cd293`.
+- Committed files: the eight paths listed under Changed surfaces.
+- Validation commands: `make check`; focused repository contract; isolated Compose config/up/down;
+  rendered pytest with Chromium and failure-only artifacts; public-tree checker; workflow YAML
+  parse; `git diff --check`; in-app Browser desktop/phone proof.
+- Push evidence: pending push.
+- Public Actions run: pending push.
 
 ## Remaining boundaries
 
